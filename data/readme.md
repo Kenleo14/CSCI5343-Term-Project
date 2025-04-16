@@ -1,4 +1,6 @@
-Run clean_data.py to extract the problem set from data.json (https://github.com/huangd1999/EffiBench/blob/main/data/dataset_with_difficulty_and_algorithm.json):
+Effibench dataset_with_difficulty_and_algorithms.json is saved here as data.zip.
+
+Use clean_data.py to extract the problem set from data.json (https://github.com/huangd1999/EffiBench/blob/main/data/dataset_with_difficulty_and_algorithm.json):
 1) Removes uneeded algorithms from data.json.
 2) Removes problems sets with typos or code errors.
 3) Selects group of 10 Easy, 10 Medium and 10 Hard Problems
