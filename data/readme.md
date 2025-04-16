@@ -5,5 +5,5 @@ Use clean_data.py to extract our problem set from data.json (https://github.com/
 2) Removes problems sets with typos or code errors.
 3) Selects group of 10 Easy, 10 Medium and 10 Hard Problems
 
-run_test_cases.py currently only runs tests for the human generated code. This outputs the execution time for each of the 30 problems. Working on adding functionality
+test_cases.py currently only runs tests for the human generated code. This outputs the execution time for each of the 30 problems. Working on adding functionality
 for reading/executing LLM generated code saved in LLM folders.
