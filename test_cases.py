@@ -4,6 +4,9 @@ import random
 import subprocess
 import time
 import re
+import csv
+
+results = []
 
 def execute_test_case(test_case_code):
     """
@@ -12,11 +15,11 @@ def execute_test_case(test_case_code):
     try:
         # Dynamically execute the test case using exec
         exec(test_case_code)
-        print("\t\tTest case passed!")
+        return "Test case passed!"
     except AssertionError:
-        print("\t\tTest case failed!")
+        return "Test case failed!"
     except Exception as e:
-        print(f"\t\tAn error occurred: {e}")
+        print(f"An error occurred: {e}")
 
 def test_code(code_source):
 
@@ -41,9 +44,9 @@ def test_code(code_source):
             if match:
                 function_name = match.group(1)
 
-            if code_source == "human_code":
+            if code_source == "Human":
                 # Get the test_case_generator and test_case
-                source_code = "from bisect import bisect_right, bisect_left\nimport math\nimport time\n" + problem_dictionary.get("test_case_generator") + "\nsolution = Solution()"
+                source_code = "from bisect import bisect_right, bisect_left\nimport math\nfrom collections import Counter\nimport time\n" + problem_dictionary.get("test_case_generator") + "\nsolution = Solution()"
                 source_code = source_code.replace("if __name__ == \"__main__\":\n    num_tests = 100\n    test_case_generator_results = test_generated_test_cases(num_tests)\n", "")
                 source_code = source_code.replace("if __name__ == \"__main__\":\n    num_tests = 100  # You can change this to generate more test cases\n    test_case_generator_results = test_generated_test_cases(num_tests)\n", "")
                 test_case_code = problem_dictionary.get("test_case")
@@ -63,20 +66,29 @@ def test_code(code_source):
 
             # Execute the test case generator
             start_time = time.time()
-            execute_test_case(test_case_code)
+            test_pass = execute_test_case(test_case_code)
             end_time = time.time()
             total_time = end_time - start_time
-            execution_times.append([i,total_time, problem_dictionary.get("difficulty")])
-            print(f"Problem #{i + 1}\t({execution_times[i][2]}): \t{(execution_times[i][1] * 1000):.4f} ms")
-        # for i in range(len(execution_times)):
-            
+            execution_times.append([code_source,i,total_time, problem_dictionary.get("difficulty"), test_pass])
+            results.append([i+1,code_source,total_time, problem_dictionary.get("difficulty"), test_pass])
+        
+        # for i in range(len(execution_times)):  
+        #     print(f"Problem #{i + 1} ({code_source})\t({execution_times[i][3]}): \t{(execution_times[i][2] * 1000):.4f} ms")
 
 def main():
 
-    test_code("human_code")
+    test_code("Human")
     test_code("GPT4o")
-    #add return to functions for execution times and test case passed
-    #add Human/LLM to Problem name
+    # test_code("Gemini")
+    # test_code("Deepseek")
+    
+    for i in range(len(results)):
+            results.sort()
+            print(results[i])
+            
+    with open('out.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerows(results)
 
 if __name__ == "__main__":
     main()
