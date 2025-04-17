@@ -34,7 +34,6 @@ def test_code(code_source):
             print(f"Error: Failed to parse JSON in '{dataset_file}'.")
             return
 
-        execution_times = []
         # Iterate through each problem in the dataset
         for i in range(len(data)):
             # Get the dictionary for each problem
@@ -57,10 +56,6 @@ def test_code(code_source):
                 with open(file_path, 'r') as file:
                     source_code = file.read() + "\nsolution = Solution()"
                 test_case_code = problem_dictionary.get("test_case")
-                # function_list = ['shipWithinDays','peakIndexInMountainArray','reachNumber','nums','findKthPositive','countNegatives','arraysIntersection','isMajorityElement','searchInsert','missingNumber','intersection','intersect','isPerfectSquare','search','nextGreatestLetter','fairCandySwap','fixedPoint','findMin','findPeakElement','minSubArrayLen','hIndex','findDuplicate','kthSmallest','findRadius','mySqrt','findRadius','findPairs','singleNonDuplicate','findKthNumber','preimageSizeFZF','maximizeSweetness','closestToTarget','minWastedSpace','minOperations','maxTotalFruits']
-                # for function in function_list:
-                #     test_case_code = test_case_code.replace(f"solution.{function}","Solution")
-                #test_case_code = test_case_code.replace("solution.searchInsert","Solution").replace("solution.mySqrt", "Solution").replace("solution.missingNumber", "Solution").replace("solution.intersection", "Solution").replace("solution.intersect", "Solution").replace("solution.isPerfectSquare", "Solution").replace("solution.search", "Solution").replace("solution.nextGreatestLetter", "Solution").replace("solution.fairCandySwap", "Solution").replace("solution.fixedPoint", "Solution").replace("solution.findMin", "Solution").replace("solution.findPeakElement", "Solution").replace("solution.minSubArrayLen", "Solution").replace("solution.", "Solution")
 
             exec(source_code, globals())
 
@@ -69,11 +64,7 @@ def test_code(code_source):
             test_pass = execute_test_case(test_case_code)
             end_time = time.time()
             total_time = end_time - start_time
-            execution_times.append([code_source,i,total_time, problem_dictionary.get("difficulty"), test_pass])
             results.append([i+1,function_name,code_source,total_time, problem_dictionary.get("difficulty"), test_pass])
-        
-        # for i in range(len(execution_times)):  
-        #     print(f"Problem #{i + 1} ({code_source})\t({execution_times[i][3]}): \t{(execution_times[i][2] * 1000):.4f} ms")
 
 def main():
 
@@ -84,7 +75,7 @@ def main():
     
     for i in range(len(results)):
             results.sort()
-            print(results[i])
+            print(f"Problem #{results[i][0]} ({results[i][2]}): \t{(results[i][3] * 1000):.4f} ms\t{results[i][5]} Task:{results[i][1]}")
             
     with open('results.csv', 'w', newline='') as f:
         writer = csv.writer(f)
