@@ -1,22 +1,20 @@
-"""
-
-"""
-
 import json
 import os
 import random
 import subprocess
 import time
+import re
 
 def remove_non_binary_search():
     with open('data.json', 'r') as file:
         data = json.load(file)
 
-    algorithm = "binary_search"
+    algorithm = ["binary_search"]
 
     for i in range(len(data)):
         try:
-            while data[i]['algorithms'][0] != algorithm:
+            while data[i]['algorithms'] != algorithm:
+                    # print(len(data[i]['algorithms']))
                     del data[i]
         except IndexError:
             print(f"Other algorithms removed from data.json")
@@ -38,6 +36,13 @@ def execute_test_case(test_case_code):
     except Exception as e:
         print(f"An error occurred: {e}")
         return 1
+
+def save_prompts(prompt, problem, function_name):
+    folder_name = "LLM_Prompts"
+    file_name = f"{problem}.txt"
+    file_path = os.path.join(folder_name, file_name)
+    with open(file_path, 'w', encoding='utf-8') as file:
+        file.write(f"Solve problem using python script titled '{problem}_{function_name}.py'. Only include function, named '{function_name}' within Class 'Solution'.\n\n{prompt}")
 
 def main():
     # Load the effibench dataset from the JSON file and only keep binary_search problems
@@ -97,36 +102,51 @@ def main():
     for i in removeErrors:
         del binary_search_data[i]
 
-    easyCount = 0
-    medCount = 0
-    hardCount = 0
-    deleteList = []
+    #Reorder list by difficulty and cut to 30 problems
+    ordered_list = []
 
+    easy_List = []
+    med_List = []
+    hard_List = []
+    
     for i in range(len(binary_search_data)):
         try:
-            if binary_search_data[i]['difficulty'] == "Easy" and easyCount < 10:
-                easyCount += 1
-            elif binary_search_data[i]['difficulty'] == "Medium" and medCount < 10:
-                medCount += 1
-            elif binary_search_data[i]['difficulty'] == "Hard" and hardCount < 10:
-                hardCount += 1
+            if binary_search_data[i]['difficulty'] == "Easy" and len(easy_List) < 10:
+                easy_List.append(binary_search_data[i])
+            elif binary_search_data[i]['difficulty'] == "Medium" and len(med_List) < 10:
+                med_List.append(binary_search_data[i])
+            elif binary_search_data[i]['difficulty'] == "Hard" and len(hard_List) < 10:
+                hard_List.append(binary_search_data[i])
             else: 
-                deleteList.insert(0, i)
+                continue
                 
         except IndexError:
             print(f"Reached end of list")
             break
 
-    for i in deleteList:
-        del binary_search_data[i]
+    ordered_list = easy_List + med_List + hard_List
 
     with open(binary_search_dataset, 'w') as file:
-        json.dump(binary_search_data, file, indent=4)
+        json.dump(ordered_list, file, indent=4)
 
     with open(binary_search_dataset, 'r') as file:
         binary_search_data = json.load(file)
 
+    #Create and save LLM Prompts
+    for i in range(len(binary_search_data)):
+        prompt = binary_search_data[i]['markdown_description']
+        test_case_string = binary_search_data[i]['test_case']
+        match = re.search(r"solution\.(\w+)\(", test_case_string)
+        if match:
+            function_name = match.group(1)
+
+        filename = f"Problem_{i+1}"
+        save_prompts(prompt, filename, function_name)
+        # print(binary_search_data[i]['canonical_solution'])
+        # print(binary_search_data[i]['test_case_generator'])
+
     print(f"Final Problem Count (binary_search_data.json): {len(binary_search_data)}")
+    
 
 if __name__ == "__main__":
     main()
