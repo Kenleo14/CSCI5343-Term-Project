@@ -86,7 +86,7 @@ def main():
             results.sort()
             print(results[i])
             
-    with open('out.csv', 'w', newline='') as f:
+    with open('results.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerows(results)
 
