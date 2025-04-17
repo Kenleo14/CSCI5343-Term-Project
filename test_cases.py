@@ -70,7 +70,7 @@ def test_code(code_source):
             end_time = time.time()
             total_time = end_time - start_time
             execution_times.append([code_source,i,total_time, problem_dictionary.get("difficulty"), test_pass])
-            results.append([i+1,code_source,total_time, problem_dictionary.get("difficulty"), test_pass])
+            results.append([i+1,function_name,code_source,total_time, problem_dictionary.get("difficulty"), test_pass])
         
         # for i in range(len(execution_times)):  
         #     print(f"Problem #{i + 1} ({code_source})\t({execution_times[i][3]}): \t{(execution_times[i][2] * 1000):.4f} ms")
